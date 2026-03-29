@@ -414,3 +414,40 @@ input, textarea, select {
         max-height: 250px;
     }
 }
+
+.banner {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                url('/static/img/banner-fachada.png'); /* Verifique se o caminho da imagem está certo */
+    background-size: cover;
+    background-position: center;
+    height: 400px; /* Altura padrão para PC */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    padding: 20px;
+}
+
+.banner-conteudo h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* AJUSTE PARA CELULAR */
+@media (max-width: 600px) {
+    .banner {
+        height: 250px; /* Altura menor para o celular não ficar só banner */
+        padding: 15px;
+    }
+
+    .banner-conteudo h1 {
+        font-size: 1.8rem; /* Texto maior e legível no Zap */
+    }
+
+    .banner-conteudo p {
+        font-size: 1rem;
+        display: block; /* Garante que o texto apareça */
+    }
+}
