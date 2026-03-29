@@ -416,17 +416,30 @@ input, textarea, select {
 }
 
 .banner {
+    /* Gradiente para escurecer a foto e o caminho da imagem */
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                url('/static/img/banner-fachada.png'); /* Verifique se o caminho da imagem está certo */
-    background-size: cover;
-    background-position: center;
-    height: 400px; /* Altura padrão para PC */
+                url('/static/img/banner-fachada.png');
+    
+    /* CONTROLANDO O ZOOM */
+    background-size: cover;      /* Garante que preencha, mas vamos ajustar a posição */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat;
+    
+    /* ALTURA FIXA PARA NÃO DISTORCER */
+    height: 350px; 
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: white;
-    padding: 20px;
+}
+
+/* AJUSTE PARA CELULAR */
+@media (max-width: 600px) {
+    .banner {
+        height: 200px; /* Altura menor no celular evita o zoom excessivo */
+        background-attachment: scroll; /* Melhora a performance no mobile */
+    }
 }
 
 .banner-conteudo h1 {
