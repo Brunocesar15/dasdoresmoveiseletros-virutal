@@ -330,3 +330,34 @@ input, textarea, select {
 .btn-compartilhar img {
     filter: brightness(0) invert(1); /* Deixa o ícone branco */
 }
+.filtros-categoria {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* Permite deslizar os filtros no celular */
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.btn-filtro {
+    background: #f0f0f0;
+    border: 2px solid #ddd;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #555;
+    transition: 0.3s;
+}
+
+.btn-filtro:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.btn-filtro.ativo {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}

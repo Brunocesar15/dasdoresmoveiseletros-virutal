@@ -60,6 +60,10 @@
                     <input type="file" id="imagem" name="imagem" accept="image/*">
                     <p id="avisoEdicao" style="display:none; font-size: 0.8rem; color: #666;">Deixe em branco para manter a imagem atual.</p>
                 </div>
+                <div class="campo" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                     <input type="checkbox" id="destaque" name="destaque" style="width: auto;">
+                    <label for="destaque" style="margin-bottom: 0;">Exibir este produto nos Destaques da Loja</label>
+                </div>
 
                 <button type="submit" id="btnAcao" class="btn-acao">Enviar para Loja</button>
                 <button type="button" id="btnCancelar" onclick="limparFormulario()" style="display:none; background:#999; margin-top:10px;" class="btn-acao">Cancelar Edição</button>
@@ -126,6 +130,7 @@
                 document.getElementById('btnCancelar').style.display = "block";
                 document.getElementById('avisoEdicao').style.display = "block";
                 document.getElementById('imagem').required = false;
+                document.getElementById('destaque').checked = p.destaque;
 
                 window.scrollTo(0, 0);
             }

@@ -25,6 +25,15 @@
             <p>Ofertas exclusivas em móveis e eletrodomésticos com a qualidade que você confia.</p>
         </div>
     </section>
+    <div class="container-loja" style="margin-top: 30px;">
+    <div class="filtros-categoria" id="filtrosCategoria">
+        <button class="btn-filtro ativo" onclick="filtrarPorCategoria('Todos')">Todos</button>
+        <button class="btn-filtro" onclick="filtrarPorCategoria('Móveis')">Móveis</button>
+        <button class="btn-filtro" onclick="filtrarPorCategoria('Eletros')">Eletros</button>
+        <button class="btn-filtro" onclick="filtrarPorCategoria('Cama e Banho')">Cama e Banho</button>
+        <button class="btn-filtro" onclick="filtrarPorCategoria('Diversos')">Diversos</button>
+    </div>
+</div>
     <section class="container-loja">
         <div class="titulo-sessao">
             <h2>🔥 Ofertas em Destaque</h2>
@@ -86,34 +95,19 @@
     </footer>
 
     <script>
-        // Função para carregar os produtos da API
+    let todosOsProdutos = []; 
+
 async function carregarProdutos() {
     try {
         const res = await fetch('/api/produtos/');
-        const produtos = await res.json();
+        todosOsProdutos = await res.json();
         
-        const vitrine = document.getElementById('vitrine');
-        const gridDestaques = document.getElementById('gridDestaques');
-
-        if (!produtos || produtos.length === 0) {
-            vitrine.innerHTML = "<p>Nenhum produto cadastrado no momento.</p>";
+        if (!todosOsProdutos || todosOsProdutos.length === 0) {
+            document.getElementById('vitrine').innerHTML = "<p>Nenhum produto cadastrado no momento.</p>";
             return;
         }
 
-        // 1. FILTRAR PRODUTOS (Destaques vs Restante)
-        const produtosDestaque = produtos.filter(p => p.destaque === true);
-        const produtosComuns = produtos; // Mantemos todos na vitrine principal ou filtramos se preferir
-
-        // 2. GERAR CARDS DE DESTAQUE (Seção Superior)
-        if (produtosDestaque.length > 0) {
-            gridDestaques.innerHTML = produtosDestaque.map(p => criarCardHTML(p, true)).join('');
-        } else {
-            // Se não houver nenhum marcado, podemos esconder a seção ou mostrar mensagem
-            document.querySelector('.container-loja').style.display = 'none';
-        }
-
-        // 3. GERAR VITRINE COMPLETA (Seção Inferior)
-        vitrine.innerHTML = produtosComuns.map(p => criarCardHTML(p, false)).join('');
+        exibirProdutos(todosOsProdutos); 
 
     } catch (error) {
         console.error("Erro ao carregar produtos:", error);
@@ -121,14 +115,53 @@ async function carregarProdutos() {
     }
 }
 
-// Função auxiliar para criar o HTML do Card (Evita repetição de código)
+function exibirProdutos(lista) {
+    const vitrine = document.getElementById('vitrine');
+    const gridDestaques = document.getElementById('gridDestaques');
+    const secaoDestaques = document.querySelector('.container-loja');
+
+    // 1. Filtrar e exibir Destaques (Sempre baseados na lista original ou na filtrada)
+    const produtosDestaque = lista.filter(p => p.destaque === true);
+    
+    if (produtosDestaque.length > 0) {
+        gridDestaques.innerHTML = produtosDestaque.map(p => criarCardHTML(p, true)).join('');
+        secaoDestaques.style.display = 'block';
+    } else {
+        gridDestaques.innerHTML = "";
+        // Opcional: esconder a seção de destaques se não houver nenhum do tipo filtrado
+        // secaoDestaques.style.display = 'none'; 
+    }
+
+    // 2. Vitrine Principal
+    if (lista.length === 0) {
+        vitrine.innerHTML = "<p>Nenhum produto encontrado nesta categoria.</p>";
+    } else {
+        vitrine.innerHTML = lista.map(p => criarCardHTML(p, false)).join('');
+    }
+}
+
+function filtrarPorCategoria(categoria) {
+    // Ajusta a aparência dos botões
+    const botoes = document.querySelectorAll('.btn-filtro');
+    botoes.forEach(btn => btn.classList.remove('ativo'));
+    
+    // Adiciona classe ativo ao botão clicado
+    event.target.classList.add('ativo');
+
+    if (categoria === 'Todos') {
+        exibirProdutos(todosOsProdutos);
+    } else {
+        const filtrados = todosOsProdutos.filter(p => p.categoria === categoria);
+        exibirProdutos(filtrados);
+    }
+}
+
 function criarCardHTML(p, ehDestaque) {
     const dadosLimpos = JSON.stringify(p).replace(/"/g, '&quot;');
     const classeDestaque = ehDestaque ? 'card-destaque-especial' : '';
     const seloDestaque = ehDestaque ? `<span class="selo-oferta">OFERTA VIP</span>` : '';
 
-    // Mensagem pronta para o compartilhamento entre clientes
-    const msgShare = encodeURIComponent(`Olha esse móvel na Dadores Móveis: *${p.nome}* por apenas R$ ${p.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}! 🏠🏠`);
+    const msgShare = encodeURIComponent(`Olha esse móvel na Dasdores Móveis: *${p.nome}* por apenas R$ ${p.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}! 🏠🏠`);
     const linkShare = `https://wa.me/?text=${msgShare}`;
 
     return `
@@ -155,7 +188,6 @@ function criarCardHTML(p, ehDestaque) {
     `;
 }
 
-// Função para abrir o modal com detalhes
 function abrirModal(p) {
     document.getElementById('modalNome').innerText = p.nome;
     document.getElementById('modalDescricao').innerText = p.descricao || "Sem descrição disponível.";

@@ -6,7 +6,8 @@ class ProdutoDTO(BaseModel):
     preco: float
     quantidade_estoque: int
     categoria: str
-    franquia: str 
+    material: str | None
+    dimensoes: str | None
 
 class AtualizarEstoqueDTO(BaseModel):
     quantidade: int

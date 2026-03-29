@@ -7,4 +7,7 @@ class ProdutoModel(SQLModel, table=True):
     preco: float
     quantidade_estoque: int
     categoria: str
-    franquia: str | None
+    material: str | None = None # Novo
+    dimensoes: str | None = None # Novo
+    imagem_url: str | None = None # Onde guardaremos o caminho da foto
+    destaque: bool = Field(default=False) # VIP
