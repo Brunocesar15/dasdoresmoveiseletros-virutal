@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasdores Móveis e Eletros</title>
+    
+    <title>Dasdores Móveis e Eletros - Sua casa merece o melhor!</title>
+    
+    <meta property="og:title" content="Dasdores Móveis e Eletros - Catálogo Virtual">
+    <meta property="og:description" content="Confira nossas ofertas de móveis e eletrodomésticos em Miguel Alves - PI. Peça pelo WhatsApp!">
+    <meta property="og:image" content="https://dasdoresmoveiseletros-virutal.onrender.com/static/img/logo-dm.jpg">
+    <meta property="og:url" content="https://dasdoresmoveiseletros-virutal.onrender.com/static/loja.html">
+    <meta property="og:type" content="website">
+
     <link rel="icon" type="image/jpeg" href="/static/img/logo-dm.jpg">
     <link rel="stylesheet" href="/static/css/estilo.css">
 </head>
@@ -166,8 +174,15 @@ function criarCardHTML(p, ehDestaque) {
     const classeDestaque = ehDestaque ? 'card-destaque-especial' : '';
     const seloDestaque = ehDestaque ? `<span class="selo-oferta">OFERTA VIP</span>` : '';
 
-    const msgShare = encodeURIComponent(`Olha o que eu encontrei na Dasdores Móveis: *${p.nome}* por apenas R$ ${p.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}! 🏠🏠`);
-    const linkShare = `https://wa.me/?text=${msgShare}`;
+    // Captura o link atual da página (funciona no PC e no Celular)
+    const urlLoja = window.location.href; 
+
+    const msgShare = encodeURIComponent(
+        `Olha o que eu encontrei na Dasdores Móveis: *${p.nome}* por apenas R$ ${p.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}! 🏠🏠\n\nVeja no site: `
+    );
+
+    // Aqui juntamos a mensagem com o link da sua loja no Render
+    const linkShare = `https://wa.me/?text=${msgShare}${urlLoja}`;
 
     return `
         <div class="card-produto ${classeDestaque}" style="cursor: pointer; position: relative;">
