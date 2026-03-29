@@ -464,3 +464,43 @@ input, textarea, select {
         display: block; /* Garante que o texto apareça */
     }
 }
+
+.whatsapp-flutuante {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #25d366;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+    transition: 0.3s;
+}
+
+.whatsapp-flutuante img {
+    width: 25px;
+    height: 25px;
+}
+
+.whatsapp-flutuante:hover {
+    transform: scale(1.1);
+    background-color: #128c7e;
+}
+
+/* No celular, mostramos apenas o ícone para não tampar a tela */
+@media (max-width: 600px) {
+    .whatsapp-flutuante span {
+        display: none;
+    }
+    .whatsapp-flutuante {
+        padding: 15px;
+        bottom: 15px;
+        right: 15px;
+    }
+}

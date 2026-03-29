@@ -166,7 +166,7 @@ function criarCardHTML(p, ehDestaque) {
     const classeDestaque = ehDestaque ? 'card-destaque-especial' : '';
     const seloDestaque = ehDestaque ? `<span class="selo-oferta">OFERTA VIP</span>` : '';
 
-    const msgShare = encodeURIComponent(`Olha esse móvel na Dasdores Móveis: *${p.nome}* por apenas R$ ${p.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}! 🏠🏠`);
+    const msgShare = encodeURIComponent(`Olha o que eu encontrei na Dasdores Móveis: *${p.nome}* por apenas R$ ${p.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}! 🏠🏠`);
     const linkShare = `https://wa.me/?text=${msgShare}`;
 
     return `
@@ -223,5 +223,9 @@ window.onclick = function(event) {
 
 carregarProdutos();
     </script>
+    <a href="https://wa.me/558699410028" class="whatsapp-flutuante" target="_blank">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
+        <span>Fale Conosco</span>
+    </a>
 </body>
 </html>
