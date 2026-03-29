@@ -361,3 +361,56 @@ input, textarea, select {
     color: white;
     border-color: var(--primary);
 }
+
+/* Configuração padrão do Grid (PC) */
+.grid-produtos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* AJUSTES PARA CELULAR (Telas menores que 600px) */
+@media (max-width: 600px) {
+    .grid-produtos {
+        /* Mostra 2 produtos por linha (ou 1 se preferir bem grande) */
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .card-produto h3 {
+        font-size: 0.9rem; /* Diminui um pouco o texto para caber */
+    }
+
+    .valor {
+        font-size: 1.1rem; /* Preço legível */
+    }
+
+    .banner h1 {
+        font-size: 1.5rem; /* Título do banner menor para não quebrar */
+    }
+
+    /* Filtros com rolagem lateral no dedo */
+    .filtros-categoria {
+        justify-content: flex-start;
+        padding-left: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .modal-conteudo {
+        width: 95%;
+        margin: 10% auto;
+        padding: 15px;
+    }
+
+    .modal-corpo {
+        flex-direction: column; /* Imagem em cima, texto embaixo */
+    }
+
+    .modal-imagem img {
+        height: auto;
+        max-height: 250px;
+    }
+}
