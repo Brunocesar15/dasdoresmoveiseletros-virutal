@@ -13,7 +13,7 @@ from banco_dados import inicializar_banco, obter_engine
 app = FastAPI()
 
 # Inicializa o banco de dados
-inicializar_banco(obter_engine())
+inicializar_banco()
 
 # Garante que as pastas existam
 os.makedirs("static/uploads", exist_ok=True)
