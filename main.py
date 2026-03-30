@@ -1,29 +1,31 @@
-import os  # O 'os' deve ser importado sozinho aqui
+import os
 import secrets
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
+from contextlib import asynccontextmanager # Para um startup mais limpo
 
-# Importações do seu projeto (mantenha como estava)
+# Importações do seu projeto
 from controladores import roteador_produtos
-from banco_dados import inicializar_banco, obter_engine
+from banco_dados import inicializar_banco
 
-# --- CONFIGURAÇÃO INICIAL ---
-app = FastAPI()
+# --- STARTUP EVENT ---
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Inicializa o banco (Sincroniza tabelas no Supabase)
+    inicializar_banco()
+    yield
 
-# Inicializa o banco de dados
-inicializar_banco()
+app = FastAPI(lifespan=lifespan)
 
-# Garante que as pastas existam
+# Mantemos as pastas apenas para arquivos que já vão no seu GIT (CSS, JS, Imagens fixas)
 os.makedirs("static/uploads", exist_ok=True)
-os.makedirs("static/css", exist_ok=True)
-os.makedirs("static/img", exist_ok=True)
 
-# --- SEGURANÇA ---
+# --- SEGURANÇA (ADMIN_USER e PASS deveriam vir do .env) ---
 security = HTTPBasic()
-ADMIN_USER = "admin"
-ADMIN_PASS = "dasdores123"
+ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+ADMIN_PASS = os.getenv("ADMIN_PASS", "dasdores123")
 
 def verificar_autenticacao(credentials: HTTPBasicCredentials = Depends(security)):
     usuario_correto = secrets.compare_digest(credentials.username, ADMIN_USER)
@@ -38,18 +40,16 @@ def verificar_autenticacao(credentials: HTTPBasicCredentials = Depends(security)
 
 # --- ROTAS ---
 
-# 1. Rota Raiz: Redireciona direto para a vitrine da loja
 @app.get("/")
 async def raiz():
     return RedirectResponse(url="/static/loja.html")
 
-# 2. Rota Admin Protegida
 @app.get("/admin")
 async def pagina_admin(username: str = Depends(verificar_autenticacao)):
+    # Certifique-se de que static/index.html é a sua página de gerenciar produtos
     return FileResponse("static/index.html")
 
-# 3. Inclui as rotas da API de produtos
-app.include_router(roteador_produtos, prefix="/api/produtos")
+# Prefixo ajustado para evitar /api/produtos/produtos
+app.include_router(roteador_produtos, prefix="/api")
 
-# 4. Monta a pasta static (DEVE SER A ÚLTIMA LINHA DE CONFIGURAÇÃO)
 app.mount("/static", StaticFiles(directory="static"), name="static")

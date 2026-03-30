@@ -1,18 +1,33 @@
 from sqlmodel import create_engine, SQLModel
+from supabase import create_client, Client
 import os
 
-# 1. Ajuste na URL: Adicionamos 'ql' no postgres e o parâmetro de SSL
-URL_BANCO_DADOS = "postgresql://postgres:dasdoresadm@db.ndgfnachjiveazzwdccg.supabase.co:5432/postgres?sslmode=require"
+# 1. URL do Banco de Dados (Porta 6543 para evitar bloqueios)
+# 1. URL Ajustada para o Pooler (Porta 6543)
+# O usuário DEVE ser postgres.ndgfnachjiveazzwdccg
+# O host DEVE ser aws-0-sa-east-1.pooler.supabase.com
+URL_BANCO_DADOS = "postgresql+psycopg2://postgres:dasdoresadm@db.ndgfnachjiveazzwdccg.supabase.co:5432/postgres"
 
-# 2. Criamos o engine (o motor de conexão)
-# O echo=True ajuda a ver no terminal o que o banco está fazendo (bom para testes)
+# 2. Configurações da API do Supabase (Para o Upload de Fotos)
+SUPABASE_URL = "https://ndgfnachjiveazzwdccg.supabase.co"
+# Cole aqui a sua chave ANON (aquela longa que começa com eyJhbGci...)
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kZ2ZuYWNoaml2ZWF6endkY2NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODcyNzksImV4cCI6MjA5MDQ2MzI3OX0.LmFxvG6NaU8LGa6IMXB_ErHYFrEVDf5UNSv-w6AzeYc" 
+
+# --- CRIAÇÃO DOS OBJETOS ---
+
+# O motor para o SQLModel
 engine = create_engine(URL_BANCO_DADOS, echo=False)
+
+# O cliente para o Storage (É ISSO QUE O CONTROLADORES.PY ESTÁ BUSCANDO)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# --- FUNÇÕES DE APOIO ---
 
 def obter_engine():
     return engine
 
 def inicializar_banco():
-    # Isso cria as tabelas automaticamente no Supabase se elas não existirem
+    """Cria as tabelas no Supabase se elas não existirem"""
     try:
         SQLModel.metadata.create_all(engine)
         print("✅ Tabelas sincronizadas no Supabase com sucesso!")

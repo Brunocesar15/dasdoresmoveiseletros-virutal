@@ -1,14 +1,30 @@
 from fastapi import APIRouter, status, HTTPException, File, UploadFile, Form
 from modelos import ProdutoModel
 from servicos import ProdutoServico
-import os
+# Importe a conexão do seu arquivo de banco
+from banco_dados import supabase 
 import uuid
 
-# Objeto de rotas
 roteador_produtos = APIRouter()
-
-# Serviço de produtos
 produto_servico = ProdutoServico()
+
+async def fazer_upload_supabase(imagem: UploadFile):
+    """Função auxiliar para enviar ao Storage e retornar a URL"""
+    extensao = imagem.filename.split(".")[-1]
+    nome_arquivo = f"{uuid.uuid4()}.{extensao}"
+    caminho_storage = f"fotos/{nome_arquivo}"
+    
+    conteudo = await imagem.read()
+    
+    # Faz o upload para o bucket 'produtos'
+    supabase.storage.from_("produtos").upload(
+        path=caminho_storage,
+        file=conteudo,
+        file_options={"content-type": f"image/{extensao}"}
+    )
+    
+    # Retorna a URL Pública
+    return supabase.storage.from_("produtos").get_public_url(caminho_storage)
 
 @roteador_produtos.post("", status_code=status.HTTP_201_CREATED)
 async def adicionar_produto(
@@ -20,22 +36,17 @@ async def adicionar_produto(
     imagem: UploadFile = File(...),
     destaque: bool = Form(False) 
 ):
-    # Lógica de salvar imagem
-    extensao = os.path.splitext(imagem.filename)[1]
-    nome_arquivo = f"{uuid.uuid4()}{extensao}"
-    caminho = os.path.join("static/uploads", nome_arquivo)
-    
-    with open(caminho, "wb") as buffer:
-        buffer.write(await imagem.read())
+    # Envia para a Nuvem em vez de salvar localmente
+    url_publica = await fazer_upload_supabase(imagem)
 
-    # Criar modelo para o banco
+    # Criar modelo com a URL da internet
     novo_produto = ProdutoModel(
         nome=nome,
         descricao=descricao,
         preco=preco,
         quantidade_estoque=quantidade_estoque,
         categoria=categoria,
-        imagem_url=f"/static/uploads/{nome_arquivo}",
+        imagem_url=url_publica, # <-- Link fixo e eterno
         destaque=destaque
     )
     return produto_servico.salvar_produto(novo_produto)
@@ -51,7 +62,6 @@ async def editar_produto(
     imagem: UploadFile = File(None), 
     destaque: bool = Form(False)
 ):
-    # 1. Preparamos os dados básicos (Incluindo o destaque!)
     dados_atualizados = {
         "nome": nome,
         "descricao": descricao,
@@ -61,18 +71,11 @@ async def editar_produto(
         "destaque": destaque 
     }
 
-    # 2. Lógica para nova imagem
+    # Se enviou nova imagem, sobe para o Supabase
     if imagem and imagem.filename:
-        extensao = os.path.splitext(imagem.filename)[1]
-        nome_arquivo = f"{uuid.uuid4()}{extensao}"
-        caminho = os.path.join("static/uploads", nome_arquivo)
-        
-        with open(caminho, "wb") as buffer:
-            buffer.write(await imagem.read())
-        
-        dados_atualizados["imagem_url"] = f"/static/uploads/{nome_arquivo}"
+        url_publica = await fazer_upload_supabase(imagem)
+        dados_atualizados["imagem_url"] = url_publica
 
-    # 3. Chama o serviço
     produto = produto_servico.atualizar_produto(id, dados_atualizados)
     
     if not produto:
@@ -80,6 +83,7 @@ async def editar_produto(
     
     return produto
 
+# Mantemos as rotas GET e DELETE como estavam...
 @roteador_produtos.get("/{id}")
 def obter_produto_por_id(id: int):
     return produto_servico.obter_produto_por_id(id=id)
