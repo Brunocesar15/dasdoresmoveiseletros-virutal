@@ -3,7 +3,7 @@ from supabase import create_client, Client
 import os
 
 
-URL_BANCO_DADOS = "postgresql+psycopg2://postgres:dasdoresadm@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require"
+URL_BANCO_DADOS = "postgresql+psycopg2://postgres.ndgfnachjiveazzwdccg:dasdoresadm@aws-0-us-west-2.pooler.supabase.com:6543/postgres?sslmode=require"
 # 2. Configurações da API do Supabase (Para o Upload de Fotos)
 SUPABASE_URL = "https://ndgfnachjiveazzwdccg.supabase.co"
 # Cole aqui a sua chave ANON (aquela longa que começa com eyJhbGci...)
