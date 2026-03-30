@@ -2,12 +2,8 @@ from sqlmodel import create_engine, SQLModel
 from supabase import create_client, Client
 import os
 
-# 1. URL do Banco de Dados (Porta 6543 para evitar bloqueios)
-# 1. URL Ajustada para o Pooler (Porta 6543)
-# O usuário DEVE ser postgres.ndgfnachjiveazzwdccg
-# O host DEVE ser aws-0-sa-east-1.pooler.supabase.com
-URL_BANCO_DADOS = "postgresql+psycopg2://postgres:dasdoresadm@db.ndgfnachjiveazzwdccg.supabase.co:5432/postgres"
 
+URL_BANCO_DADOS = "postgresql+psycopg2://postgres:dasdoresadm@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require"
 # 2. Configurações da API do Supabase (Para o Upload de Fotos)
 SUPABASE_URL = "https://ndgfnachjiveazzwdccg.supabase.co"
 # Cole aqui a sua chave ANON (aquela longa que começa com eyJhbGci...)
