@@ -88,7 +88,7 @@ async def editar_produto(
 def obter_produto_por_id(id: int):
     return produto_servico.obter_produto_por_id(id=id)
 
-@roteador_produtos.get("/")
+@roteador_produtos.get("")  # <--- Deixe VAZIO para casar com o prefixo do main.py
 def listar_produtos(nome: str | None = None, preco: float | None = None, categoria: str | None = None):
     return produto_servico.listar_produtos(nome=nome, preco=preco, categoria=categoria)
 
@@ -98,3 +98,4 @@ def excluir_produto(id: int):
     if not sucesso:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
     return {"mensagem": "Produto removido com sucesso"}
+

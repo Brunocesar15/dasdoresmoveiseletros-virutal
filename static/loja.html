@@ -48,6 +48,7 @@
     <section class="container-loja">
         <div class="titulo-sessao">
             <h2>🔥 Ofertas em Destaque</h2>
+            <p>As melhores escolhas da Dasdores Móveis para você!</p>
         </div>
         <div id="gridDestaques" class="grid-produtos"></div>
     </section>
@@ -55,7 +56,8 @@
     <hr style="opacity: 0.1; margin: 40px 5%;">
 
     <section class="container-loja">
-        <h2 class="titulo-sessao">Catálogo Completo</h2>
+        <h2 class="titulo-sessao">Destaques da Semana</h2>
+        <p style="margin-bottom: 20px; color: #666;">Clique no produto para ver detalhes e comprar.</p>
         <div id="vitrine" class="grid-produtos">
             <p style="text-align:center; grid-column: 1/-1; padding: 50px;">Carregando ofertas...</p>
         </div>
@@ -70,9 +72,9 @@
                 </div>
                 <div class="modal-detalhes">
                     <h2 id="modalNome" style="color: var(--primary);"></h2>
-                    <span id="modalCategoria" class="tag-categoria-modal"></span>
-                    <p id="modalDescricao"></p>
-                    <div class="modal-preco" id="modalPreco"></div>
+                    <span id="modalCategoria" class="tag-categoria-modal" style="background: #f0f0f0; padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; display: inline-block; margin-bottom: 15px;"></span>
+                    <p id="modalDescricao" style="line-height: 1.6; color: #444; margin-bottom: 20px;"></p>
+                    <div class="modal-preco" id="modalPreco" style="font-size: 1.8rem; font-weight: bold; color: var(--primary); margin-bottom: 20px;"></div>
                     <div id="modalLinkZap"></div>
                 </div>
             </div>
@@ -83,12 +85,23 @@
         <div class="rodape-container">
             <div class="rodape-info">
                 <h3>DASDORES MÓVEIS E ELETROS</h3>
-                <p>📍 Rua Ulisses Carmo, 353 - Centro | Miguel Alves - PI</p>
-                <p>📞 WhatsApp: 86 99410-028</p>
+                <p>📍 Rua Ulisses Carmo, 353 - Centro</p>
+                <p>🏙️ Miguel Alves - PI</p>
+                <p>📞 WhatsApp: 558699410028</p>
+            </div>
+            <div class="rodape-horario">
+                <h4>Horário de Atendimento</h4>
+                <p>Segunda a Sexta: 08h às 18h</p>
+                <p>Sábado: 08h às 12h</p>
+            </div>
+            <div class="rodape-links">
+                <h4>Navegação</h4>
+                <p><a href="/admin" style="color: white; text-decoration: none; opacity: 0.8;">Painel Administrativo</a></p>
             </div>
         </div>
         <div class="rodape-direitos">
-            <p>&copy; 2026 Dasdores Móveis. Desenvolvido por Bruno Sousa.</p>
+            <p>2026 Dasdores Móveis e Eletros - Miguel Alves, Piauí.</p>
+            <p>&copy; Bruno Sousa - brunocesaralves014@gmail.com</p>
         </div>
     </footer>
 
@@ -96,24 +109,25 @@
         let todosOsProdutos = []; 
 
         async function carregarProdutos() {
-            const vitrine = document.getElementById('vitrine');
-            try {
-                // Chamada direta sem a barra final (Crucial para velocidade)
-                const res = await fetch('/api/produtos');
-                if (!res.ok) throw new Error("Erro ao buscar dados");
-                
-                todosOsProdutos = await res.json();
-                
-                if (!Array.isArray(todosOsProdutos) || todosOsProdutos.length === 0) {
-                    vitrine.innerHTML = "<p style='grid-column: 1/-1;'>Aguardando novos produtos...</p>";
-                    return;
-                }
-                exibirProdutos(todosOsProdutos); 
-            } catch (error) {
-                console.error("Erro:", error);
-                vitrine.innerHTML = "<p style='grid-column: 1/-1; color: red;'>Erro de conexão. Tente recarregar.</p>";
-            }
+    const vitrine = document.getElementById('vitrine');
+    try {
+        // Forçamos o endereço completo do seu servidor local
+        const res = await fetch('http://127.0.0.1:8000/api/produtos'); // SEM barra no final
+        
+        if (!res.ok) throw new Error("Erro na resposta do servidor");
+        
+        todosOsProdutos = await res.json();
+        
+        if (!Array.isArray(todosOsProdutos) || todosOsProdutos.length === 0) {
+            vitrine.innerHTML = "<p style='grid-column: 1/-1;'>O catálogo está vazio no momento.</p>";
+            return;
         }
+        exibirProdutos(todosOsProdutos); 
+    } catch (error) {
+        console.error("Erro detalhado:", error); // Aperte F12 no navegador para ver isso
+        vitrine.innerHTML = "<p style='grid-column: 1/-1; color: red;'>Não foi possível conectar à base de dados da Dasdores Móveis.</p>";
+    }
+}
 
         function exibirProdutos(lista) {
             const vitrine = document.getElementById('vitrine');
@@ -134,18 +148,20 @@
         function criarCardHTML(p, destaque) {
             const dados = JSON.stringify(p).replace(/"/g, '&quot;');
             const preco = p.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            const msg = encodeURIComponent(`Gostei do *${p.nome}* no site!`);
-            
+            const msgShare = encodeURIComponent(`Olha o que eu encontrei na Dasdores Móveis: *${p.nome}* por R$ ${preco}!`);
+            const linkShare = `https://wa.me/?text=${msgShare} ${window.location.href}`;
+
             return `
-                <div class="card-produto ${destaque ? 'card-destaque-especial' : ''}" onclick="abrirModal(${dados})">
-                    <div class="btn-compartilhar" onclick="event.stopPropagation(); window.open('https://wa.me/?text=${msg}', '_blank')">
+                <div class="card-produto ${destaque ? 'card-destaque-especial' : ''}" style="cursor: pointer; position: relative;">
+                    ${destaque ? '<span class="selo-oferta">OFERTA VIP</span>' : ''}
+                    <div class="btn-compartilhar" onclick="event.stopPropagation(); window.open('${linkShare}', '_blank')">
                         <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="Zap" style="width: 20px;">
                     </div>
-                    <div class="imagem-container">
+                    <div class="imagem-container" onclick="abrirModal(${dados})">
                         <img src="${p.imagem_url || '/static/img/sem-foto.jpg'}" alt="${p.nome}" loading="lazy">
                         <span class="tag-categoria">${p.categoria}</span>
                     </div>
-                    <div class="produto-info">
+                    <div class="produto-info" onclick="abrirModal(${dados})">
                         <h3>${p.nome}</h3>
                         <div class="preco-container">
                             <span class="moeda">R$</span>
@@ -158,7 +174,7 @@
 
         function abrirModal(p) {
             document.getElementById('modalNome').innerText = p.nome;
-            document.getElementById('modalDescricao').innerText = p.descricao || "";
+            document.getElementById('modalDescricao').innerText = p.descricao || "Sem descrição.";
             document.getElementById('modalCategoria').innerText = p.categoria;
             document.getElementById('modalPreco').innerText = `R$ ${p.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             document.getElementById('modalImg').src = p.imagem_url;

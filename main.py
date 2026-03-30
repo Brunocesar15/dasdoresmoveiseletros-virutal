@@ -5,6 +5,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
 
 # Importações do seu projeto
 from controladores import roteador_produtos
@@ -17,11 +18,20 @@ async def lifespan(app: FastAPI):
     inicializar_banco()
     yield
 
-# ADICIONADO: redirect_slashes=False para evitar erros de barra final
-app = FastAPI(lifespan=lifespan, redirect_slashes=False)
+# Removi o redirect_slashes=False para o FastAPI ser mais flexível
+app = FastAPI(lifespan=lifespan)
 
 # Pastas de suporte
 os.makedirs("static/uploads", exist_ok=True)
+
+# --- MIDDLEWARE CORS ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # --- SEGURANÇA ---
 security = HTTPBasic()
@@ -39,19 +49,19 @@ def verificar_autenticacao(credentials: HTTPBasicCredentials = Depends(security)
         )
     return credentials.username
 
-# --- ROTAS ---
+# --- ROTAS DA API (Sempre antes dos arquivos estáticos) ---
+
+# Incluímos o roteador APENAS UMA VEZ
+app.include_router(roteador_produtos, prefix="/api/produtos", tags=["Produtos"])
 
 @app.get("/")
 async def raiz():
-    # Redireciona para a vitrine da Dasdores Móveis
+    # Redireciona para a vitrine
     return RedirectResponse(url="/static/loja.html")
 
 @app.get("/admin")
 async def pagina_admin(username: str = Depends(verificar_autenticacao)):
     return FileResponse("static/index.html")
 
-# Ajustado para bater com o seu controladores.py
-app.include_router(roteador_produtos, prefix="/api/produtos")
-
-# Montagem de arquivos estáticos (sempre por último)
+# --- ARQUIVOS ESTÁTICOS (Sempre por último) ---
 app.mount("/static", StaticFiles(directory="static"), name="static")
