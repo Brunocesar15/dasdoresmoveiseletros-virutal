@@ -112,7 +112,7 @@
     const vitrine = document.getElementById('vitrine');
     try {
         // Forçamos o endereço completo do seu servidor local
-        const res = await fetch('http://127.0.0.1:8000/api/produtos'); // SEM barra no final
+        const res = await fetch('/api/produtos');
         
         if (!res.ok) throw new Error("Erro na resposta do servidor");
         
