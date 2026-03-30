@@ -1,5 +1,4 @@
 from sqlmodel import Session, select
-from sqlalchemy import update
 from banco_dados import obter_engine
 from modelos import ProdutoModel  # Este é o nome correto do seu modelo
 from fastapi import status, HTTPException

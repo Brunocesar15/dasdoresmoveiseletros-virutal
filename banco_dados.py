@@ -1,21 +1,20 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
+from sqlmodel import create_engine, SQLModel
+import os
 
-# Formato: postgres://postgres:[SUA_SENHA]@ndgfnachjiveazzwdccg.supabase.co:5432/postgres
-DB_URL = "postgres://postgres:dasdoresadm@ndgfnachjiveazzwdccg.supabase.co:5432/postgres"
+# 1. Ajuste na URL: Adicionamos 'ql' no postgres e o parâmetro de SSL
+URL_BANCO_DADOS = "postgresql://postgres:dasdoresadm@db.ndgfnachjiveazzwdccg.supabase.co:5432/postgres?sslmode=require"
 
-def get_connection():
+# 2. Criamos o engine (o motor de conexão)
+# O echo=True ajuda a ver no terminal o que o banco está fazendo (bom para testes)
+engine = create_engine(URL_BANCO_DADOS, echo=False)
+
+def obter_engine():
+    return engine
+
+def inicializar_banco():
+    # Isso cria as tabelas automaticamente no Supabase se elas não existirem
     try:
-        # O Supabase exige SSL para conexões externas por segurança
-        conn = psycopg2.connect(DB_URL, sslmode='require')
-        print("Conexão com o Supabase realizada com sucesso!")
-        return conn
+        SQLModel.metadata.create_all(engine)
+        print("✅ Tabelas sincronizadas no Supabase com sucesso!")
     except Exception as e:
-        print(f"Erro ao conectar ao Supabase: {e}")
-        return None
-
-# Teste rápido de conexão
-if __name__ == "__main__":
-    connection = get_connection()
-    if connection:
-        connection.close()
+        print(f"❌ Erro ao sincronizar tabelas: {e}")
